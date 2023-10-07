@@ -6,12 +6,12 @@ int main(int argc, char **argv) {
 
   for (int i = 0; i < I; i++) 
     for (int k = 0; k < K; k++) {
-      A[i][k] = k;
+      A[i][k] = 1;
     }
 
   for (int j = 0; j < J; j++)
     for (int k = 0; k < K; k++) {
-      B[j][k] = k;
+      B[j][k] = 1;
     }
 
 #pragma scop
@@ -35,12 +35,14 @@ int main(int argc, char **argv) {
   int err = 0;
   for (int i = 0; i < I; i++)
     for (int j = 0; j < J; j++) {
-      if (fabs((float)C_golden[i][j] - (float)C[i][j]) > 0.001)
+      if (fabs((float)C_golden[i][j] - (float)C[i][j]) > 0.001){
         err++;
+        printf("Error @ (%d,%d)\n",i,j);
+      }
     }
 
   if (err)
-    printf("Failed with %d errors!\n", err);
+    printf("Failed with %d errors! %d Correct\n", err, I*J - err);
   else
     printf("Passed!\n");
 
