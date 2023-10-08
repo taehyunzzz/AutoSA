@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
       if (fabs((float)C_golden[i][j] - (float)C[i][j]) > 0.001){
         err++;
         printf("Error @ C[%d][%d]: %.3f vs %.3f (%.3f)\n",
+            i,j,
             (float)C_golden[i][j],
             (float)C[i][j],
             fabs((float)C_golden[i][j] - (float)C[i][j])

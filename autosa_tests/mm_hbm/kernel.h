@@ -3,9 +3,9 @@
 #include "math.h"
 
 typedef float data_t;
-#define I 16
-#define J 512
-#define K 256
+#define I 8
+#define J 128
+#define K 32
 
 // #define I 64
 // #define J 64

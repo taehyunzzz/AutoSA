@@ -48,27 +48,33 @@ if [[ 0 == 1 ]]; then
     # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,1024,1024];kernel[]->latency[2,2];kernel[]->simd[16]}" \
 fi
 
-if [[ 0 == 1 ]]; then
+if [[ 1 == 1 ]]; then
     # mm_hbm : 
     #   - hls Csim: pass
     #   - sw_emu 
     #   - hw_emu 
     #   - hw
     TEST_NAME=mm_hbm
-    OUTPUT_DIR=./test_${TEST_NAME}_vitis
+    OUTPUT_DIR=./test_${TEST_NAME}_baby
     rm -rf ${OUTPUT_DIR}
     cp -r autosa.tmp ${OUTPUT_DIR}
     ./autosa ./autosa_tests/mm_hbm/kernel.c \
     --config=./autosa_config/autosa_config.json \
     --target=autosa_hls_c \
     --output-dir=${OUTPUT_DIR}/output \
-    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,32];\
-                kernel[]->latency[4,4];kernel[]->simd[16];\
-                kernel[]->hbm_A[4];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[4]}" \
+    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,128,32];\
+                kernel[]->latency[4,4];kernel[]->simd[8];\
+                kernel[]->hbm_A[2];kernel[]->hbm_B[2];kernel[]->hbm_C_drain[2]}" \
     --simd-info=./autosa_tests/mm_hbm/simd_info.json \
-    --hbm-port-num=31 \
+    --hbm-port-num=6 \
+    --hls \
     --hbm
     # --hls \
+    # A small toy SA sample with high latency hiding
+    # 2x32 output stationary SA
+    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,128,32];\
+    #             kernel[]->latency[4,4];kernel[]->simd[8];\
+    #             kernel[]->hbm_A[4];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[4]}" \
     # A small toy SA sample with high latency hiding
     # 2x128 output stationary SA
     # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,32];\
@@ -78,7 +84,7 @@ if [[ 0 == 1 ]]; then
     echo ""
 fi
 
-if [[ 1 == 1 ]]; then
+if [[ 0 == 1 ]]; then
 
     TEST_NAME=large/mm
     OUTPUT_DIR=./test_${TEST_NAME}
