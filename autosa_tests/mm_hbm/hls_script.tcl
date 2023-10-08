@@ -9,7 +9,8 @@ add_files src/kernel_kernel.h
 add_files src/kernel_kernel.cpp
 add_files -tb src/kernel_host.cpp
 open_solution "solution1"
-set_part {xcu200-fsgd2104-2-e}
+# set_part {xcu200-fsgd2104-2-e}
+set_part {xcu280-fsvh2892-2L-e}
 create_clock -period 5 -name default
 config_compile -name_max_length 50
 #source "./prj/solution1/directives.tcl"

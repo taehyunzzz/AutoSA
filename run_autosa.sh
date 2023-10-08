@@ -64,17 +64,20 @@ if [[ 1 == 1 ]]; then
     --output-dir=${OUTPUT_DIR}/output \
     --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,128,32];\
                 kernel[]->latency[4,4];kernel[]->simd[8];\
-                kernel[]->hbm_A[2];kernel[]->hbm_B[2];kernel[]->hbm_C_drain[2]}" \
+                kernel[]->hbm_A[1];kernel[]->hbm_B[4];kernel[]->hbm_C_drain[2]}" \
     --simd-info=./autosa_tests/mm_hbm/simd_info.json \
-    --hbm-port-num=6 \
+    --hbm-port-num=7 \
     --hls \
     --hbm
+    # HBM provides 32ch x 512bits (4bursts/BL)
+    # 1 HBM / 256 elements data (maximum, aligning recommended)
+
     # --hls \
     # A small toy SA sample with high latency hiding
     # 2x32 output stationary SA
     # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,128,32];\
     #             kernel[]->latency[4,4];kernel[]->simd[8];\
-    #             kernel[]->hbm_A[4];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[4]}" \
+    #             kernel[]->hbm_A[1];kernel[]->hbm_B[4];kernel[]->hbm_C_drain[2]}" \
     # A small toy SA sample with high latency hiding
     # 2x128 output stationary SA
     # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,32];\

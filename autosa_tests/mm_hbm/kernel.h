@@ -4,8 +4,8 @@
 
 typedef float data_t;
 #define I 8
-#define J 128
-#define K 32
+#define J 256
+#define K 64
 
 // #define I 64
 // #define J 64
