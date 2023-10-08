@@ -13,10 +13,15 @@ int main(int argc, char **argv) {
       B[j][k] = (data_t)rand() / RAND_MAX;      
     }
 
+  for (int j = 0; j < I; j++)
+    for (int k = 0; k < J; k++) {
+      C[j][k] = 0;
+    }
+
 #pragma scop
   for (int i = 0; i < I; i++)
     for (int j = 0; j < J; j++) {
-      //C[i][j] = 0;
+      C[i][j] = 0;
       for (int k = 0; k < K; k++) {        
         C[i][j] = C[i][j] + A[i][k] * B[j][k];
       }
@@ -34,8 +39,14 @@ int main(int argc, char **argv) {
   int err = 0;
   for (int i = 0; i < I; i++)
     for (int j = 0; j < J; j++) {
-      if (fabs((float)C_golden[i][j] - (float)C[i][j]) > 0.001)
+      if (fabs((float)C_golden[i][j] - (float)C[i][j]) > 0.001){
         err++;
+        printf("Error @ C[%d][%d]: %.3f vs %.3f (%.3f)\n",
+            (float)C_golden[i][j],
+            (float)C[i][j],
+            fabs((float)C_golden[i][j] - (float)C[i][j])
+        );
+      }
     }
 
   if (err)

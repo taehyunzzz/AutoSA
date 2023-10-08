@@ -13,10 +13,11 @@ if [[ 1 == 1 ]]; then
     --config=./autosa_config/autosa_config.json \
     --target=autosa_hls_c \
     --output-dir=${OUTPUT_DIR}/output \
-    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[2,2,2];kernel[]->latency[1,1];kernel[]->simd[2]}" \
+    --sa-sizes="{kernel[]->space_time[4];kernel[]->array_part[64,64,64];kernel[]->latency[2,2];kernel[]->simd[8]}" \
     --simd-info=./autosa_tests/mm/simd_info.json \
     --hls \
     --host-serialize
+
     # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[64,64,64];kernel[]->latency[4,4];kernel[]->simd[8]}" \
     # --data-pack-sizes="{kernel[]->[4,32,64]}" \
     echo ""
