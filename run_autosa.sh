@@ -62,7 +62,7 @@ if [[ 1 == 1 ]]; then
     --config=./autosa_config/autosa_config.json \
     --target=autosa_hls_c \
     --output-dir=${OUTPUT_DIR}/output \
-    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,1024,64];\
+    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,64];\
                 kernel[]->latency[2,4];kernel[]->simd[16];\
                 kernel[]->hbm_A[2];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[8]}" \
     --simd-info=./autosa_tests/mm_hbm/simd_info.json \
@@ -73,8 +73,8 @@ if [[ 1 == 1 ]]; then
     # HBM provides 32ch x 512bits (4bursts/BL)
     # 1 HBM / 256 elements data (maximum, aligning recommended)
 
-    # 4x256 Large array for FPGA synthesis
-    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,1024,64];\
+    # 4x128 Large array for FPGA synthesis
+    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,64];\
     #             kernel[]->latency[2,4];kernel[]->simd[16];\
     #             kernel[]->hbm_A[2];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[8]}" \
     # A small toy SA sample with high latency hiding
