@@ -48,7 +48,8 @@ if [[ 0 == 1 ]]; then
     # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,1024,1024];kernel[]->latency[2,2];kernel[]->simd[16]}" \
 fi
 
-if [[ 1 == 1 ]]; then
+# MM_HBM
+if [[ 0 == 1 ]]; then
     # mm_hbm : 
     #   - hls Csim: pass
     #   - sw_emu 
@@ -91,6 +92,7 @@ if [[ 1 == 1 ]]; then
     echo ""
 fi
 
+# MM_LARGE_DDR
 if [[ 0 == 1 ]]; then
 
     TEST_NAME=large/mm
@@ -114,6 +116,53 @@ if [[ 0 == 1 ]]; then
     echo ""
 
 fi
+
+# Expert (fail)
+if [[ 1 == 1 ]]; then
+    # mm_hbm : 
+    #   - hls Csim: pass
+    #   - sw_emu 
+    #   - hw_emu 
+    #   - hw
+    TEST_NAME=expert_hbm
+    OUTPUT_DIR=./test_${TEST_NAME}
+    rm -rf ${OUTPUT_DIR}
+    cp -r autosa.tmp ${OUTPUT_DIR}
+    ./autosa ./autosa_tests/expert_hbm/kernel.c \
+    --config=./autosa_config/autosa_config.json \
+    --target=autosa_hls_c \
+    --output-dir=${OUTPUT_DIR}/output \
+    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,64];\
+                kernel[]->latency[2,4];kernel[]->simd[16];\
+                kernel[]->hbm_A[2];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[8]}" \
+    --simd-info=./autosa_tests/expert_hbm/simd_info.json \
+    --hbm-port-num=32 \
+    --hls \
+    --hbm
+
+    # --hls \
+    # HBM provides 32ch x 512bits (4bursts/BL)
+    # 1 HBM / 256 elements data (maximum, aligning recommended)
+
+    # 4x128 Large array for FPGA synthesis
+    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,64];\
+    #             kernel[]->latency[2,4];kernel[]->simd[16];\
+    #             kernel[]->hbm_A[2];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[8]}" \
+    # A small toy SA sample with high latency hiding
+    # 2x32 output stationary SA
+    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,128,32];\
+    #             kernel[]->latency[4,4];kernel[]->simd[16];\
+    #             kernel[]->hbm_A[1];kernel[]->hbm_B[4];kernel[]->hbm_C_drain[2]}" \
+    # A small toy SA sample with high latency hiding
+    # 2x128 output stationary SA
+    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,32];\
+    #             kernel[]->latency[4,4];kernel[]->simd[16];\
+    #             kernel[]->hbm_A[4];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[4]}" \
+    echo ""
+    echo ""
+fi
+
+
 echo "Running ${TEST_NAME}"
 
 cp ${AUTOSA_ROOT}/autosa_tests/${TEST_NAME}/hls_script.tcl ${AUTOSA_ROOT}/${OUTPUT_DIR}/output/
