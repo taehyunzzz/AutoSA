@@ -1,6 +1,6 @@
 export XCL_EMULATION_MODE=sw_emu
 
-if [[ 1 == 1 ]]; then
+if [[ 0 == 1 ]]; then
     # mm : https://autosa.readthedocs.io/en/latest/examples/mm.html
     # - sw_emu failed
     # - hw_emu 
@@ -50,25 +50,57 @@ fi
 
 if [[ 0 == 1 ]]; then
     # mm_hbm : 
+    #   - hls Csim: pass
     #   - sw_emu 
     #   - hw_emu 
     #   - hw
-    TEST_NAME=mm_hbm_hls
-    OUTPUT_DIR=./test_${TEST_NAME}
+    TEST_NAME=mm_hbm
+    OUTPUT_DIR=./test_${TEST_NAME}_vitis
     rm -rf ${OUTPUT_DIR}
-    cp -r autosa.tmp test_${TEST_NAME}
+    cp -r autosa.tmp ${OUTPUT_DIR}
     ./autosa ./autosa_tests/mm_hbm/kernel.c \
     --config=./autosa_config/autosa_config.json \
     --target=autosa_hls_c \
     --output-dir=${OUTPUT_DIR}/output \
-    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[32,32,32];kernel[]->latency[8,8];kernel[]->simd[2];kernel[]->hbm_A[2];kernel[]->hbm_B[2];kernel[]->hbm_C_drain[2]}" \
+    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,32];\
+                kernel[]->latency[4,4];kernel[]->simd[16];\
+                kernel[]->hbm_A[4];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[4]}" \
     --simd-info=./autosa_tests/mm_hbm/simd_info.json \
-    --hls \
+    --hbm-port-num=31 \
     --hbm
+    # --hls \
+    # A small toy SA sample with high latency hiding
+    # 2x128 output stationary SA
+    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,32];\
+    #             kernel[]->latency[4,4];kernel[]->simd[16];\
+    #             kernel[]->hbm_A[4];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[4]}" \
     echo ""
     echo ""
 fi
 
+if [[ 1 == 1 ]]; then
+
+    TEST_NAME=large/mm
+    OUTPUT_DIR=./test_${TEST_NAME}
+    rm -rf ${OUTPUT_DIR}
+    mkdir -p ${OUTPUT_DIR}
+    cp -r autosa.tmp/* ${OUTPUT_DIR}/
+    ./autosa ./autosa_tests/large/mm/kernel.c \
+    --config=./autosa_config/autosa_config.json \
+    --target=autosa_hls_c \
+    --output-dir=${OUTPUT_DIR}/output \
+    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[4,128,128]; \
+                kernel[]->latency[2,2];kernel[]->simd[4]}" \
+    --simd-info=./autosa_tests/large/mm/simd_info.json \
+    --host-serialize
+    # --hls \
+    # 2x64 prototype SA model
+    # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[4,128,128]; \
+    #             kernel[]->latency[2,2];kernel[]->simd[4]}" \
+    echo ""
+    echo ""
+
+fi
 echo "Running ${TEST_NAME}"
 
 cp ${AUTOSA_ROOT}/autosa_tests/${TEST_NAME}/hls_script.tcl ${AUTOSA_ROOT}/${OUTPUT_DIR}/output/
