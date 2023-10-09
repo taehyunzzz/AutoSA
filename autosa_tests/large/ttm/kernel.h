@@ -8,11 +8,11 @@ typedef float data_t;
 //#define K 256
 //#define L 256
 
-// I: d_model
+// I: d_ff
 // J: num_experts
 // K: num_tokens
-// L: d_ff
-#define I 64
-#define J 8
+// L: d_model
+#define I 128
+#define J 16
 #define K 8
-#define L 256
+#define L 32

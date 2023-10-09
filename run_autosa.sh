@@ -49,25 +49,25 @@ if [[ 0 == 1 ]]; then
 fi
 
 # MM_HBM
-if [[ 0 == 1 ]]; then
+if [[ 1 == 1 ]]; then
     # mm_hbm : 
     #   - hls Csim: pass
     #   - sw_emu 
     #   - hw_emu 
     #   - hw
     TEST_NAME=mm_hbm
-    OUTPUT_DIR=./test_${TEST_NAME}_vitis
+    OUTPUT_DIR=./test_${TEST_NAME}
     rm -rf ${OUTPUT_DIR}
     cp -r autosa.tmp ${OUTPUT_DIR}
     ./autosa ./autosa_tests/mm_hbm/kernel.c \
     --config=./autosa_config/autosa_config.json \
     --target=autosa_hls_c \
     --output-dir=${OUTPUT_DIR}/output \
-    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,512,64];\
-                kernel[]->latency[2,4];kernel[]->simd[16];\
-                kernel[]->hbm_A[2];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[8]}" \
+    --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[8,128,32];\
+                kernel[]->latency[2,4];kernel[]->simd[8];\
+                kernel[]->hbm_A[2];kernel[]->hbm_B[16];kernel[]->hbm_C_drain[4]}" \
     --simd-info=./autosa_tests/mm_hbm/simd_info.json \
-    --hbm-port-num=32 \
+    --hbm-port-num=22 \
     --hbm
 
     # --hls \
@@ -96,7 +96,7 @@ fi
 if [[ 0 == 1 ]]; then
 
     TEST_NAME=large/mm
-    OUTPUT_DIR=./test_${TEST_NAME}
+    OUTPUT_DIR=./test_${TEST_NAME}_no_serialize
     rm -rf ${OUTPUT_DIR}
     mkdir -p ${OUTPUT_DIR}
     cp -r autosa.tmp/* ${OUTPUT_DIR}/
@@ -106,8 +106,8 @@ if [[ 0 == 1 ]]; then
     --output-dir=${OUTPUT_DIR}/output \
     --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[4,128,128]; \
                 kernel[]->latency[2,2];kernel[]->simd[4]}" \
-    --simd-info=./autosa_tests/large/mm/simd_info.json \
-    --host-serialize
+    --simd-info=./autosa_tests/large/mm/simd_info.json
+    # --host-serialize
     # --hls \
     # 2x64 prototype SA model
     # --sa-sizes="{kernel[]->space_time[3];kernel[]->array_part[4,128,128]; \
@@ -118,8 +118,15 @@ if [[ 0 == 1 ]]; then
 fi
 
 # TTM for modeling expert computation A:experts
-if [[ 1 == 1 ]]; then
-    TEST_NAME=large/ttm
+if [[ 0 == 1 ]]; then
+    #  I: d_ff 128
+    #  J: num_experts 16
+    #  K: num_tokens 8
+    #  L: d_model 32
+    #  A : expert weights (I,J,L)
+    #  B : tokens (K,L)
+    #  C : output tokens of several experts (I,J,K)
+    TEST_NAME=large/ttmc
     OUTPUT_DIR=./test_${TEST_NAME}
     rm -rf ${OUTPUT_DIR}
     cp -r autosa.tmp ${OUTPUT_DIR}
@@ -127,11 +134,14 @@ if [[ 1 == 1 ]]; then
     --config=./autosa_config/autosa_config.json \
     --target=autosa_hls_c \
     --output-dir=${OUTPUT_DIR}/output \
-    --sa-sizes="{kernel[]->space_time[4];kernel[]->array_part[64,8,8,256];\
-                kernel[]->latency[2,1,1];kernel[]->simd[16];\
-                }"
+    --sa-sizes="{kernel[]->space_time[4];kernel[]->array_part[128,16,8,32];\
+                kernel[]->latency[2,2,2];kernel[]->simd[16];\
+                }" \
     --simd-info=./autosa_tests/large/ttm/simd_info.json \
+    --autosa-verbose \
     --hls
+
+    # kernel[]->hbm_A[4];kernel[]->hbm_B[4];kernel[]->hbm_C_drain[4]}" \
     # --hbm-port-num=32 \
     # --hbm
 fi
